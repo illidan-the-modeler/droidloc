@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class MainActivity extends Activity implements LocationListener {
     
     private LocationManager lmgr;
@@ -29,8 +31,16 @@ public class MainActivity extends Activity implements LocationListener {
         lmgr = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         outputView = (TextView) this.findViewById(R.id.output);
         
-        Criteria criteria = new Criteria();
         log("Location providers: ");
+        this.dumpProviders();
+        
+        Criteria criteria = new Criteria();
+        bestProvider = lmgr.getBestProvider(criteria, true);
+        log("\nBest Provider is: " + bestProvider);
+        
+        log("\nLocations :");
+        Location location = lmgr.getLastKnownLocation(bestProvider);
+        dumpLocation(location);
     }
 
     @Override
@@ -50,6 +60,20 @@ public class MainActivity extends Activity implements LocationListener {
         return super.onOptionsItemSelected(item);
     }
     
+    @Override
+    protected void onResume() {
+        super.onResume();
+        
+        lmgr.requestLocationUpdates(this.bestProvider, 15000, 1, this);
+    }
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        
+        lmgr.removeUpdates(this);
+    }
+    
     public void onProviderEnabled(String provider) {
         
     }
@@ -59,7 +83,7 @@ public class MainActivity extends Activity implements LocationListener {
     }
     
     public void onLocationChanged(Location location) {
-        
+        dumpLocation(location);
     }
     
     public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -85,8 +109,19 @@ public class MainActivity extends Activity implements LocationListener {
         log(sb.toString());
     }
     
+    private void dumpProviders() {
+        List<String> providers = lmgr.getAllProviders();
+        for (String provider:providers) {
+            dumpProvider(provider);
+        }
+    }
+    
     private void dumpLocation(Location location) {
-        
+        if (location==null) {
+            log("\nLocation unkown.");
+        } else {
+            log("\n"+location.toString());
+        }
     }
 
 }
