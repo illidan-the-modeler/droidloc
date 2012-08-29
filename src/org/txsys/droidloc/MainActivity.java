@@ -75,11 +75,11 @@ public class MainActivity extends Activity implements LocationListener {
     }
     
     public void onProviderEnabled(String provider) {
-        
+        log("\nProvider Enabled: "+provider);
     }
     
     public void onProviderDisabled(String provider) {
-        
+        log("\nProvider Disabled: "+provider);
     }
     
     public void onLocationChanged(Location location) {
@@ -87,7 +87,8 @@ public class MainActivity extends Activity implements LocationListener {
     }
     
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        
+        log("\nProvider status changed: " + provider + ", status="
+                + S[status] + ", extras=" + extras);
     }
     
     private void log(String string) {
